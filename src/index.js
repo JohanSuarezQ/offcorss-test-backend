@@ -12,5 +12,9 @@ app.use(express.json());
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
+// Rutas de productos (VTEX)
+const productRoutes = require('./routes/productRoutes');
+app.use('/api/products', productRoutes);
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
