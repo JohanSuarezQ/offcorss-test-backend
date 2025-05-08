@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
-const DB_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/offcorss-dashboard';
+const DB_URI = process.env.MONGO_URI;
 
 mongoose.connect(DB_URI, {
   useNewUrlParser: true,
@@ -8,9 +9,9 @@ mongoose.connect(DB_URI, {
 });
 
 mongoose.connection.on('connected', () => {
-  console.log('✅ Connected to MongoDB');
+  console.log('✅ Conectado a MongoDB Atlas');
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error('❌ MongoDB connection error:', err);
+  console.error('❌ Error de conexión a MongoDB Atlas:', err);
 });
