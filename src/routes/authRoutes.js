@@ -2,11 +2,10 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const verifyToken = require('../middleware/authMiddleware');
 const router = express.Router();
 
-const SECRET_KEY = process.env.SECRET_KEY || 'offcorss_secret_key';
-
-// Registro de usuario
+// Endpoint de registro
 router.post('/register', async (req, res) => {
   try {
     const { username, firstName, lastName, email, password } = req.body;
@@ -27,7 +26,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login de usuario
+// Endpoint de login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -38,11 +37,23 @@ router.post('/login', async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-    const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
     res.status(200).json({ token, message: 'Login exitoso' });
   } catch (error) {
     res.status(500).json({ message: 'Error en el login' });
   }
 });
+
+// Endpoint para traer datos de usuario
+router.get('/user', verifyToken, async (req, res) => {
+    try {
+      const user = await User.findById(req.userId).select('-password');
+      if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener la información del usuario' });
+    }
+  });
+  
 
 module.exports = router;
